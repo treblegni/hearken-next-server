@@ -1,0 +1,9 @@
+#node specific
+node_modules
+build
+npm-debug.log
+
+#systems specific
+.nyc
+.env
+.DS_Store
