@@ -1,10 +1,14 @@
 const 
   express = require('express'),
   dotenv = require('dotenv').config(),
-  port = process.env.PORT || 3030,
-  storiesRoutes = require('./routes/stories'),
+  connectDB = require('./config/db'),
+  port = process.env.PORT || 3030
+
+const
+  thoughtsRoutes = require('./routes/thoughts'),
   {errorHandler} = require('./middleware/errorMiddleware')
 
+connectDB()
 const app = express()
 
 //middleware
@@ -12,7 +16,7 @@ app.use(express.json())// allows for json body
 app.use(express.urlencoded({extended: false}))// encodes urls for security
 
 //routes
-app.use('/api/stories',storiesRoutes)
+app.use('/api/thoughts',thoughtsRoutes)
 
 //error handler
 app.use(errorHandler)
