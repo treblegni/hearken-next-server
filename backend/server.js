@@ -6,6 +6,7 @@ const
 
 const
   thoughtsRoutes = require('./routes/thoughts'),
+  usersRoutes = require('./routes/users'),
   {errorHandler} = require('./middleware/errorMiddleware')
 
 connectDB()
@@ -17,6 +18,7 @@ app.use(express.urlencoded({extended: false}))// encodes urls for security
 
 //routes
 app.use('/api/thoughts',thoughtsRoutes)
+app.use('/api/users',usersRoutes)
 
 //error handler
 app.use(errorHandler)

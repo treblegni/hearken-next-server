@@ -1,8 +1,8 @@
 const mongoose = require('mongoose')
 
 const userSchema = mongoose.Schema({
-  age: {
-    type: Number,
+  dob: {
+    type: Date,
     required: true
   },
   email: {
@@ -21,3 +21,5 @@ const userSchema = mongoose.Schema({
 {
   timestamps: true
 })
+
+module.exports = mongoose.model('User',userSchema)

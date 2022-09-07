@@ -5,7 +5,9 @@ const Thought = require('../models/thought')
 // @route  GET /api/thoughts
 // @access Private
 const getThoughts = asyncHandler(async (req,res) => {
-  const thoughts = await Thought.find()
+  const thoughts = await Thought.find({
+    $or: [{owner: req.user.id},{assignedTo: req.user.id}]
+  })
   res.status(200).json(thoughts)
 })
 // @desc   Gets a specific thought owned by user

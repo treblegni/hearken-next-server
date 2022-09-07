@@ -1,16 +1,29 @@
 const 
   asyncHandler = require('express-async-handler'),
+  jwt = require('jsonwebtoken'),
   User = require('../models/user')
 
 // @desc   Creates a new user resource with given body
 // @route  POST /api/users
-// @access PRIVATE
+// @access Public
 const createUser = asyncHandler(async (req,res) => {
-  if (Object.keys(req.body).length == 0) {
+  const {username,email,dob} = req.body
+  if (!(username && email && dob)) {
     res.status(400)
-    throw new Error('Please include body')
+    throw new Error('All fields required')
+  }
+  const existingUser = await User.findOne({email})
+
+  if (existingUser) {
+    res.status(400)
+    throw new Error('User with that email already exists')
   }
   const user = await User.create(req.body)
+
+  if (!user) {
+    res.status(400)
+    throw new Error('User could not be created')
+  }
   res.status(200).json(user)
 })
 // @desc   Gets a specific user resource
@@ -27,7 +40,7 @@ const getUser = asyncHandler(async (req,res) => {
 })
 // @desc   Gets all user resources
 // @route  GET /api/users
-// @access PRIVATE
+// @access Private
 const getUsers = asyncHandler(async (req,res) => {
   const users = await User.find()
   res.status(200).json(users)
@@ -45,6 +58,31 @@ const deleteUser = asyncHandler(async (req,res) => {
   await user.remove()
   res.status(200).json({id: req.params.id})
 
+})
+// @desc   Logs in a registered user
+// @route  POST /api/users/login
+// @access Public
+const loginUser = asyncHandler(async (req,res) => {
+  const {username,email,dob} = req.body
+
+  if (!(username && email && dob)) {
+    res.status(400)
+    throw new Error('All fields required')
+  }
+  const user = await User.findOne({username,email,dob})
+
+  if (!user) {
+    res.status(400)
+    throw new Error('User does not exists exists')
+  }
+  
+  res.status(200).json({
+    _id: user._id,
+    username: user.username,
+    email: user.email,
+    dob: user.dob,
+    token: _generateToken(user._id)
+  })
 })
 // @desc   Updates a specific user resource
 // @route  PUT /api/users/<ID>
@@ -68,10 +106,18 @@ const updateUser = asyncHandler(async (req,res) => {
   res.status(200).json(updatedUser)
 })
 
+//Authentication
+const _generateToken = (id) => {
+  return jwt.sign({id},process.env.JWT_SECRET,{
+    expiresIn: '1d'
+  })
+}
+
 module.exports = {
   createUser,
   deleteUser,
   getUser,
   getUsers,
+  loginUser,
   updateUser
 }

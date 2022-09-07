@@ -9,10 +9,12 @@ const
     updateThought
   } = require('../controllers/thoughtsControllers')
 
-router.post('/',createThought)
-router.delete('/:id',deleteThought)
-router.get('/:id',getThought)
-router.get('/',getThoughts)
-router.put('/:id',updateThought)
+const {protect} = require('../middleware/authMiddleware')
+
+router.post('/',protect,createThought)
+router.delete('/:id',protect,deleteThought)
+router.get('/:id',protect,getThought)
+router.get('/',protect,getThoughts)
+router.put('/:id',protect,updateThought)
 
 module.exports = router
